@@ -1,0 +1,168 @@
+---
+title: "heart disease (exploratory data analysis)"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(shiny)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+df <- read.csv("D:/R files/R_file/heart EDA/heart.csv")
+```
+
+# Page 1
+
+## Row
+
+### VALUE BOX
+
+```{r}
+count<-count(df , target)
+valueBox(526, caption = "healthy people" , icon = "fa-user")
+```
+
+### value box 2
+
+```{r}
+valueBox(499, caption = "sick people" , icon = "fa-user")
+```
+
+### value box 3
+
+```{r}
+valueBox(713, caption = "no. of male " , icon = "fa-user")
+```
+
+### value box 4
+
+```{r}
+valueBox(312, caption = "no. of female" , icon = "fa-user")
+```
+
+## Column
+
+### percentage of sick and healthy
+
+```{r}
+renderPlotly({
+   count<-count(df , target)
+fig<-plot_ly(count,labels=c("sick","healthy") ,values=count$n , type = "pie" ,marker = list(colors=c("#265094","#cc4343")))
+fig<-fig%>%layout(title="percentage of sick and healthy")
+fig
+})
+```
+
+### percentage of men and woman
+
+```{r}
+renderPlotly({
+   count_1<-count(df,sex)
+fig_1<-plot_ly(count_1,labels=c("female","male") ,values=count_1$n , type = "pie" , marker = list(colors=c("#265094","#cc4343")))
+fig_1<-fig_1%>%layout(title="percentage of man and woman")
+fig_1
+})
+```
+
+### percentage of type of chest pain
+
+```{r}
+cout_2<-count(df , cp)
+renderPlotly({
+fig_2<-plot_ly(cout_2,labels=c("0","1" , "2" , "3") ,values=cout_2$n , type = "pie" , marker = list(colors=c("#265094","#cc4343")))
+fig_2<-fig_2%>%layout(title="type of cheat pain")
+fig_2})
+```
+
+# Page 2
+
+## Row
+
+### value box1
+
+```{r}
+valueBox(max(cout_2$n) , caption="maximum no of chast pain of type 0" , icon = "fa-user")
+```
+
+### value box2
+
+```{r}
+valueBox(max(df$age), caption="oldest person" , icon = "fa-user")
+```
+
+### value box 3
+
+```{r}
+valueBox(max(df$trestbps), caption="highest blood pressure" , icon = "fa-user")
+```
+
+### value box 3
+
+```{r}
+valueBox(max(df$chol), caption="highset cholestroal" , icon = "fa-user")
+```
+
+## Row
+
+### types of chest pain
+
+```{r}
+renderPlot(
+   
+ggplot(df,aes(x = cp)) + 
+   geom_bar(position = position_dodge(preserve = "single"),fill="#7a0f34")
+)
+```
+
+### age of patients
+
+```{r}
+renderPlot(
+   hist(df$age , col = "#3c4d82" ,xlab = "age" , ylab="" , main="age of patients",breaks=100)
+
+)
+```
+
+### resting blood pressure
+
+```{r}
+renderPlot(
+   hist(df$trestbps , col = "#3c4d82" ,xlab = "blood pressure" , ylab="" , main="resting blood pressure",breaks=100)
+)
+```
+
+### cholesterol in blood
+
+```{r}
+renderPlot(
+hist(df$chol , col = "#3c4d82" ,xlab = "cholestroal" , ylab="" , main="choletrol in blood" , breaks = 20)
+
+)
+```
+
+# Page 3
+
+## Row
+
+### scatter plot for blood pressure
+
+```{r}
+renderPlot(
+ggplot(df,aes(x=thalach , y=trestbps))+geom_point()+geom_density_2d()
+)
+```
+
+### scatter plot of cholesterol and blood pressure
+
+```{r}
+renderPlot(
+ggplot(df,aes(x=chol , y=trestbps))+geom_point()+geom_density_2d()
+)
+```
